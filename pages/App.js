@@ -32,8 +32,9 @@ export default function App() {
     <View
     style={styles.pai}
     >
-      <Login />
-
+      <Login 
+        lightMode={true}
+      />
     </View>
   );
 }

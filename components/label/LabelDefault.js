@@ -5,7 +5,8 @@ export default function LabelDefault(props) {
 
     return (
         <Text
-        style={styles.labelDefPai}
+        style={[styles.labelDefPai, props.style]}
+        onPress={props.onPress}
         >
             {props.text}
         </Text>
@@ -15,8 +16,7 @@ export default function LabelDefault(props) {
 const styles = StyleSheet.create({
     labelDefPai: {
         fontFamily: 'PixelifySans',
-        color: '#210124',
-        fontSize: 16,
+        fontSize: 18,
         fontStyle: 'normal',
         fontWeight: 400,
     }
