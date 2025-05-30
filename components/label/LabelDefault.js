@@ -1,7 +1,8 @@
+import React from "react";
 import { StyleSheet, Text } from "react-native";
 
 
-export default function LabelDefault(props) {
+export default React.memo( function LabelDefault(props) {
 
     return (
         <Text
@@ -11,11 +12,11 @@ export default function LabelDefault(props) {
             {props.text}
         </Text>
     )
-}
+})
 
 const styles = StyleSheet.create({
     labelDefPai: {
-        fontFamily: 'PixelifySans',
+        fontFamily: 'PixelifySans-Regular',
         fontSize: 18,
         fontStyle: 'normal',
         fontWeight: 400,

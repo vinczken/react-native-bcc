@@ -1,9 +1,10 @@
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet } from 'react-native';
 
 import * as Font from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen'; // Para controlar a tela de splash
 import { useEffect } from 'react';
-import Login from './Login';
+import { ThemeProvider } from './contexts/ThemeContext';
+import MainNavigator from './navigation/MainNavigator';
 // Mantenha a tela de splash visível enquanto carregamos os recursos
 SplashScreen.preventAutoHideAsync();
 
@@ -13,7 +14,12 @@ export default function App() {
     async function prepare() {
       try {
         await Font.loadAsync({
-          'PixelifySans': require('../assets/fonts/PixelifySans-VariableFont_wght.ttf'),
+          'PixelifySans-Regular': require('./assets/fonts/PixelifySans-Regular.ttf'),
+          'PixelifySans-Black': require('./assets/fonts/PixelifySans-Black.ttf'),
+          'PixelifySans-Bold': require('./assets/fonts/PixelifySans-Bold.ttf'),
+          'PixelifySans-ExtraBold': require('./assets/fonts/PixelifySans-ExtraBold.ttf'),
+          'PixelifySans-Medium': require('./assets/fonts/PixelifySans-ExtraBold.ttf'),
+          'PixelifySans-SemiBold': require('./assets/fonts/PixelifySans-SemiBold.ttf'),
         });
         await new Promise(resolve => setTimeout(resolve, 2000)); // Simula um carregamento mais longo
       } catch (e) {
@@ -25,17 +31,14 @@ export default function App() {
 
     prepare();
   }, []);
-
   // Esconde a tela de splash quando o app estiver pronto
 
+
   return (
-    <View
-    style={styles.pai}
-    >
-      <Login 
-        lightMode={true}
+    <ThemeProvider>
+      <MainNavigator
       />
-    </View>
+    </ThemeProvider>
   );
 }
 
