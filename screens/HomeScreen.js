@@ -1,51 +1,116 @@
-import { useMemo, useState } from "react";
-import { Dimensions, StyleSheet, View } from "react-native";
-import { SafeAreaProvider } from "react-native-safe-area-context";
-import InputDefault from "../components/input/InputDefault";
-import { ThemeBackgroundColor } from "../functions/GeneralsAux";
+import { Dimensions, ScrollView, StyleSheet, View } from "react-native";
+import { SafeAreaProvider, SafeAreaView } from "react-native-safe-area-context";
+import BannerDefault from "../components/banner/BannerDefault";
+import InputSearch from "../components/input/InputSearch";
+import SectionDefault from "../components/section/SectionDefault";
+import { useTheme } from "../contexts/ThemeContext";
+import { ThemeBackgroundColor, ThemeColor, ThemeValue } from "../functions/GeneralsAux";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 export default function HomeScreen({ navigation, ...props }) {
     const { theme } = useTheme();
-    const [pesquisa, setPesquisa] = useState('');
 
-    const homePai = useMemo(() => [
-        ThemeBackgroundColor('#FFECDB', '#001643', theme),
-    ])
-
-    const homeInputsDefaultStyle = useMemo(() => [
+    const homePai = ThemeBackgroundColor('#FFECDB', '#0B0B35', theme)
+    const homeInputsDefaultStyle = [
         [
             ThemeColor('#750D37', '#750D37', theme),
-            ThemeBackgroundColor('#DBF9F0', '#F2C572', theme),
-            { paddingTop: 10, paddingBottom: 11, paddingHorizontal: 13, fontSize: 18 }
+            ThemeBackgroundColor('#DBF9F0', '#ACACDE', theme),
         ],
-        ThemeValue('#C490D1', '#AA7BAD', theme),
-        ThemeValue('#F7F9F7', '#7676CE', theme),
-        ThemeValue('#B3DEC1', '#F29188', theme)
-    ], [theme]);
+        ThemeValue('#C490D1', '#FFF2F6', theme),
+        ThemeValue('#FFECDB', '#0B0B35', theme),
+        ThemeValue('#C490D1', '#F7F9F7', theme)
+    ]
+
+    const banners = [[
+        'Oferta do',
+        'dia 40% OFF',
+        'em pedidos',
+        'de TCG!!!'
+    ], [
+        '50% OFF',
+        'em booster',
+        'packs de',
+        'Pokémon!'
+    ], [
+        'Oferta do',
+        'dia 25% OFF',
+        'em decks',
+        'de Magic!'
+    ], [
+        'Black Friday',
+        '70% OFF',
+        'em todos os',
+        'card games!'
+    ]]
 
     return (
         <SafeAreaProvider>
-            <View
+            <ScrollView
+                showsVerticalScrollIndicator={false}
                 style={[styles.homePai, homePai]}
             >
-                <View
-                    style={[styles.homePesquisa]}
+                <SafeAreaView
+                    style={{ gap: 10 }}
                 >
-                    <InputDefault
-                        value={nome}
-                        onChange={setNome}
-                        placeholder={"Nome"}
-                        style={[homeInputsDefaultStyle[0]]}
-                        placeholderTextColor={homeInputsDefaultStyle[1]}
-                        selectionColor={homeInputsDefaultStyle[1]}
-                        borderColor={homeInputsDefaultStyle[2]}
-                        borderColorFocused={homeInputsDefaultStyle[3]}
-                        colorNotFocus={homeInputsDefaultStyle[1]}
-                    />
-                </View>
-            </View>
+                    <View
+                        style={[styles.homePesquisa]}
+                    >
+                        <InputSearch
+                            placeholder={"Pesquise por tipo"}
+                            inputCores={homeInputsDefaultStyle}
+                            botaoCores={[
+                                ThemeBackgroundColor('#C490D1', '#F7F9F7', theme),
+                                ThemeValue('#750D37', '#7676CE', theme),
+                                ThemeValue('#E5FCFF', '#ACACDE', theme)
+                            ]}
+                            assuntos={true}
+                            assuntosCores={[
+                                [
+                                    ThemeBackgroundColor('#DBF9F0', '#B8336A', theme),
+                                    [
+                                        ThemeColor('#83C291', '#FFCFA3', theme),
+                                    ]
+                                ],
+                                ThemeValue('#83C291', '#FFCFA3', theme)
+                            ]}
+                        />
+                    </View>
+                    <ScrollView
+                        horizontal={true}
+                        showsHorizontalScrollIndicator={false}
+                        contentContainerStyle={{ paddingHorizontal: 0 }}
+                        pagingEnabled={false}
+                        snapToInterval={0.99 * screenWidth}
+                        decelerationRate='fast'
+                    >
+                        <View
+                            style={styles.banners}
+                        >
+                            {banners.map((item, index) => (
+                                <BannerDefault
+                                    key={index}
+                                    text={item}
+                                />
+                            ))
+
+                            }
+                        </View>
+                    </ScrollView>
+                    <View
+                        style={styles.secoes}
+                    >
+                        {Array.from({ length: 5 }, (_, index) => (
+                            <SectionDefault
+                                key={index}
+                                sectionName={'Copag Blister (' + index + ')'}
+                            />
+                        ))
+                        }
+
+                    </View>
+                </SafeAreaView>
+            </ScrollView>
         </SafeAreaProvider>
     )
 }
@@ -54,8 +119,16 @@ const styles = StyleSheet.create({
     homePai: {
         flex: 1,
         flexDirection: 'column',
+        paddingHorizontal: 0
     },
     homePesquisa: {
         flexDirection: 'column',
+    },
+    banners: {
+        flexDirection: 'row',
+        paddingHorizontal: 10,
+        gap: 10
+    },
+    secoes: {
     }
 })

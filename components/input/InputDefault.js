@@ -2,7 +2,7 @@ import React, { useRef, useState } from "react";
 import { StyleSheet, TextInput } from "react-native";
 
 
-export default React.memo(function InputDefault(props) {
+export default React.memo(function InputDefault({ inputCores, ...props}) {
 
     const [isFocus, setIsFocus] = useState(false);
     const ref = useRef(null);
@@ -10,12 +10,15 @@ export default React.memo(function InputDefault(props) {
     return (
         <TextInput
             ref={props.ref ? props.ref : ref}
-            style={[styles.textInput, props.style, isFocus ? { borderColor: props.borderColorFocused, shadowColor: props.borderColorFocused } : { borderColor: props.borderColor, shadowColor: props.borderColor, color: props.colorNotFocus }]}
-            placeholder={props.placeholder}
-            placeholderTextColor={props.placeholderTextColor}
-            selectionColor={'#C490D1'}
             value={props.value}
             onChangeText={props.onChange}
+            placeholder={props.placeholder}
+            style={[styles.textInput, inputCores[0], 
+                isFocus ? 
+                    { borderColor: inputCores[3], shadowColor: inputCores[3] } 
+                    : { borderColor: inputCores[2], shadowColor: inputCores[2], color: inputCores[1] }]}
+            placeholderTextColor={inputCores[1]}
+            selectionColor={inputCores[1]}
             onFocus={props.onFocus ? props.onFocus : (() => setIsFocus(true))}
             onBlur={props.onBlur ? props.onBlur : (() => setIsFocus(false))}
             secureTextEntry={props.secureTextEntry}
@@ -30,10 +33,8 @@ const styles = StyleSheet.create({
         width: 'auto',
         borderRadius: 7,
 
-        paddingTop: 15,
-        paddingBottom: 15,
-        paddingLeft: 16,
-        paddingRight: 16,
+        paddingVertical: 15,
+        paddingHorizontal: 16,
 
         fontFamily: 'PixelifySans-Regular',
         fontSize: 18,

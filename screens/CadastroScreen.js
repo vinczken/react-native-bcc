@@ -1,5 +1,5 @@
 import { Circle } from 'iconoir-react-native';
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TouchableOpacityDefault from '../components/button/TouchableOpacityDefault';
@@ -17,11 +17,11 @@ export default function CadastroScreen({ navigation, ...props }) {
     const [senha, setSenha] = useState('')
     const [senhaConfirmacao, setSenhaConfirmacao] = useState('')
 
-    const cadastroLabelDefaultStyle = useMemo(() => [
+    const cadastroLabelDefaultStyle = [
         ThemeColor('#210124', '#FFF2F6', theme),
         { marginLeft: 4, fontSize: 15 }
-    ], [theme]);
-    const cadastroInputsDefaultStyle = useMemo(() => [
+    ]
+    const cadastroInputsDefaultStyle = [
         [
             ThemeColor('#750D37', '#750D37', theme),
             ThemeBackgroundColor('#DBF9F0', '#F2C572', theme),
@@ -29,8 +29,8 @@ export default function CadastroScreen({ navigation, ...props }) {
         ],
         ThemeValue('#C490D1', '#AA7BAD', theme),
         ThemeValue('#F7F9F7', '#7676CE', theme),
-        ThemeValue('#B3DEC1', '#F29188', theme)
-    ], [theme]);
+        ThemeValue('#B3DEC1', '#F29188', theme),
+    ]
 
     return (
         <SafeAreaProvider>
@@ -101,12 +101,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                         value={nome}
                                         onChange={setNome}
                                         placeholder={"Nome"}
-                                        style={[cadastroInputsDefaultStyle[0]]}
-                                        placeholderTextColor={cadastroInputsDefaultStyle[1]}
-                                        selectionColor={cadastroInputsDefaultStyle[1]}
-                                        borderColor={cadastroInputsDefaultStyle[2]}
-                                        borderColorFocused={cadastroInputsDefaultStyle[3]}
-                                        colorNotFocus={cadastroInputsDefaultStyle[1]}
+                                        inputCores={cadastroInputsDefaultStyle}
                                     />
                                 </View>
                                 <View
@@ -120,12 +115,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                         value={usuario}
                                         onChange={setUsuario}
                                         placeholder={"Usuário"}
-                                        style={[cadastroInputsDefaultStyle[0]]}
-                                        placeholderTextColor={cadastroInputsDefaultStyle[1]}
-                                        selectionColor={cadastroInputsDefaultStyle[1]}
-                                        borderColor={cadastroInputsDefaultStyle[2]}
-                                        borderColorFocused={cadastroInputsDefaultStyle[3]}
-                                        colorNotFocus={cadastroInputsDefaultStyle[1]}
+                                        inputCores={cadastroInputsDefaultStyle}
                                     />
                                 </View>
                                 <View
@@ -139,12 +129,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                         value={email}
                                         onChange={setEmail}
                                         placeholder={"E-mail"}
-                                        style={[cadastroInputsDefaultStyle[0]]}
-                                        placeholderTextColor={cadastroInputsDefaultStyle[1]}
-                                        selectionColor={cadastroInputsDefaultStyle[1]}
-                                        borderColor={cadastroInputsDefaultStyle[2]}
-                                        borderColorFocused={cadastroInputsDefaultStyle[3]}
-                                        colorNotFocus={cadastroInputsDefaultStyle[1]}
+                                        inputCores={cadastroInputsDefaultStyle}
                                     />
                                 </View>
                                 <View
@@ -158,13 +143,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                         value={senha}
                                         onChange={setSenha}
                                         placeholder={"Senha"}
-                                        style={[cadastroInputsDefaultStyle[0]]}
-                                        placeholderTextColor={cadastroInputsDefaultStyle[1]}
-                                        selectionColor={cadastroInputsDefaultStyle[1]}
-                                        borderColor={cadastroInputsDefaultStyle[2]}
-                                        borderColorFocused={cadastroInputsDefaultStyle[3]}
-                                        colorNotFocus={cadastroInputsDefaultStyle[1]}
-                                        secureTextEntry={true}
+                                        inputCores={cadastroInputsDefaultStyle}
                                     />
                                 </View>
                                 <View
@@ -178,12 +157,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                         value={senhaConfirmacao}
                                         onChange={setSenhaConfirmacao}
                                         placeholder={"Senha novamente"}
-                                        style={[cadastroInputsDefaultStyle[0]]}
-                                        placeholderTextColor={cadastroInputsDefaultStyle[1]}
-                                        selectionColor={cadastroInputsDefaultStyle[1]}
-                                        borderColor={cadastroInputsDefaultStyle[2]}
-                                        borderColorFocused={cadastroInputsDefaultStyle[3]}
-                                        colorNotFocus={cadastroInputsDefaultStyle[1]}
+                                        inputCores={cadastroInputsDefaultStyle}
                                         secureTextEntry={true}
                                     />
                                 </View>
@@ -196,8 +170,10 @@ export default function CadastroScreen({ navigation, ...props }) {
                                     text={"Criar conta"}
                                     style={[
                                         ThemeBackgroundColor('#E5FCFF', '#321934', theme),
-                                        ThemeColor('#B8336A', '#FFC6D9', theme),
                                         { marginHorizontal: 15 }
+                                    ]}
+                                    textStyle={[
+                                        ThemeColor('#B8336A', '#FFC6D9', theme),
                                     ]}
                                     borderColor={ThemeValue('#CFBAE1', '#9303A6', theme)}
                                 />
@@ -211,12 +187,15 @@ export default function CadastroScreen({ navigation, ...props }) {
                                     <TouchableOpacityDefault
                                         text={"Entre com a sua conta"}
                                         style={[
+                                            { borderWidth: 0, paddingVertical: 0, shadowOpacity: 0 }
+                                        ]}
+                                        textStyle={[
                                             ThemeColor('#B8336A', '#FF89B1', theme),
-                                            { fontSize: 16, fontFamily: 'PixelifySans-Bold', borderWidth: 0, paddingVertical: 0, shadowOpacity: 0 }
+                                            { fontSize: 16, fontFamily: 'PixelifySans-Bold' }
                                         ]}
                                         onPress={() => navigation.navigate('Login')}
                                         activeOpacity={0.2}
-                                        
+
                                     />
                                 </View>
                             </View>

@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useState } from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TouchableOpacityDefault from '../components/button/TouchableOpacityDefault';
@@ -14,14 +14,11 @@ export default function LoginScreen({ navigation, ...props }) {
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
 
-    const loginPaiStyle = useMemo (() => 
-        ThemeBackgroundColor('#F7F9F7', '#001643', theme), 
-    [theme]);
+    const loginPaiStyle = ThemeBackgroundColor('#F7F9F7', '#001643', theme)
 
-    const loginLabelDefaultStyle = useMemo (() => 
-        ThemeColor('#210124', '#F7F9F7', theme),
-    [theme]);
-    const loginInputsDefaultStyle = useMemo(() => [
+
+    const loginLabelDefaultStyle = ThemeColor('#210124', '#F7F9F7', theme)
+    const loginInputsDefaultStyle = [
         [
             ThemeBackgroundColor('#CEEAFF', '#7676CE', theme),
             ThemeColor('#551159', '#F7F9F7', theme)
@@ -29,7 +26,7 @@ export default function LoginScreen({ navigation, ...props }) {
         ThemeValue('#C490D1', '#C59FC9', theme),
         ThemeValue('#F7F9F7', '#001643', theme),
         ThemeValue('#FF89B1', '#C59FC9', theme)
-    ], [theme]);
+    ]
 
     const Validar = () => {
         navigation.navigate('Home')
@@ -40,7 +37,7 @@ export default function LoginScreen({ navigation, ...props }) {
             <View
                 style={[styles.loginPai, loginPaiStyle]}
             >
-                { theme == 'light' ? (
+                {theme == 'light' ? (
                     <>
                         <Image
                             source={require('../assets/login/cardsTopLight.png')}
@@ -81,14 +78,9 @@ export default function LoginScreen({ navigation, ...props }) {
                                 />
                                 <InputDefault
                                     value={email}
-                                    onChange={(e) => setEmail(e.target.value)}
+                                    onChange={setEmail}
                                     placeholder={"E-mail"}
-                                    style={loginInputsDefaultStyle[0]}
-                                    placeholderTextColor={loginInputsDefaultStyle[1]}
-                                    selectionColor={loginInputsDefaultStyle[1]}
-                                    borderColor={loginInputsDefaultStyle[2]}
-                                    borderColorFocused={loginInputsDefaultStyle[3]}
-                                    colorNotFocus={loginInputsDefaultStyle[1]}
+                                    inputCores={loginInputsDefaultStyle}
                                 />
                             </View>
                             <View
@@ -100,18 +92,29 @@ export default function LoginScreen({ navigation, ...props }) {
                                 />
                                 <InputDefault
                                     value={senha}
-                                    onChange={(e) => setSenha(e.target.value)}
+                                    onChange={setSenha}
                                     placeholder={"Senha"}
-                                    style={loginInputsDefaultStyle[0]}
-                                    placeholderTextColor={loginInputsDefaultStyle[1]}
-                                    selectionColor={loginInputsDefaultStyle[1]}
-                                    borderColor={loginInputsDefaultStyle[2]}
-                                    borderColorFocused={loginInputsDefaultStyle[3]}
-                                    colorNotFocus={loginInputsDefaultStyle[1]}
+                                    inputCores={loginInputsDefaultStyle}
                                 />
-                                <LabelDefault
+                                <TouchableOpacityDefault
                                     text={"Esqueceu sua senha?"}
-                                    style={useMemo (() => ThemeColor('#B8336A', '#FFF7AE', theme), [theme])}
+                                    style={[
+                                        {
+                                            borderWidth: 0,
+                                            paddingVertical: 0,
+                                            shadowOpacity: 0,
+                                            justifyContent: 'left',
+                                            alignItems: 'left'
+                                        }
+                                    ]}
+                                    textStyle={[
+                                        styles.labelDefaultFixo,
+                                        styles.labelDefaultClick,
+                                        ThemeColor('#B8336A', '#FFF7AE', theme),
+                                        styles.esqueceuSenha
+                                    ]}
+                                    onPress={() => console.log('')}
+                                    activeOpacity={0.2}
                                 />
                             </View>
                         </View>
@@ -122,24 +125,37 @@ export default function LoginScreen({ navigation, ...props }) {
                                 onPress={Validar}
                                 text={"Entrar"}
                                 style={[
-                                    useMemo(() => ThemeBackgroundColor('#B74F87', '#4703A6', theme), [theme]),
-                                    useMemo(() => ThemeColor('#E5FCFF', '#F7F9F7', theme), [theme]),
+                                    ThemeBackgroundColor('#B74F87', '#4703A6', theme),
                                 ]}
-                                borderColor={useMemo(() => ThemeValue('#551159', '#A4DEF9', theme), [theme])}
+                                textStyle={[
+                                    ThemeColor('#E5FCFF', '#F7F9F7', theme),
+                                    { margin: 0 }
+                                ]}
+                                borderColor={ThemeValue('#551159', '#A4DEF9', theme)}
                             />
                             <View
                                 style={[styles.criarContaContent]}
                             >
                                 <LabelDefault
                                     text={"Sua primeira vez aqui?"}
-                                    style={[loginLabelDefaultStyle]}
+                                    style={[
+                                        loginLabelDefaultStyle,
+                                        styles.labelDefaultFixo
+                                    ]}
                                 />
                                 <TouchableOpacityDefault
                                     text={"Crie uma conta"}
                                     style={[
-                                        useMemo(() => ThemeColor('#B8336A', '#97F9F9', theme), [theme]), 
+                                        {
+                                            borderWidth: 0,
+                                            paddingVertical: 0,
+                                            shadowOpacity: 0,
+                                        }
+                                    ]}
+                                    textStyle={[
+                                        styles.labelDefaultFixo,
                                         styles.labelDefaultClick,
-                                        styles.labelDefaultFixo
+                                        ThemeColor('#B8336A', '#97F9F9', theme),
                                     ]}
                                     onPress={() => navigation.navigate('Cadastro')}
                                     activeOpacity={0.2}
@@ -209,12 +225,15 @@ const styles = StyleSheet.create({
     },
     labelDefaultFixo: {
         fontSize: 16,
-        shadowOpacity: 0,
         margin: 0
     },
     labelDefaultClick: {
         fontFamily: 'PixelifySans-Bold',
-        borderWidth: 0, 
-        paddingVertical: 0
+    },
+    esqueceuSenha: {
+        fontFamily: 'PixelifySans-Regular',
+        fontSize: 18,
+        fontStyle: 'normal',
+        fontWeight: 400,
     }
 });

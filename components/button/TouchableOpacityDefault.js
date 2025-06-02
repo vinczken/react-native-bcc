@@ -1,25 +1,24 @@
 import { useState } from "react";
 import { StyleSheet, Text, TouchableOpacity } from "react-native";
 
-export default function TouchableOpacityDefault(props) {
+export default function TouchableOpacityDefault({ keyDiv, ...props }) {
     const [pressed, setPressed] = useState(false);
     const borderColor = props.borderColor
 
     return (
         <TouchableOpacity
+            onPressIn={() => setPressed(true)}
+            onPressOut={() => setPressed(false)}
+            onPress={props.onPress}
             style={[styles.pressPaiDef, 
                 props.style,
                 {borderColor: borderColor, shadowColor: borderColor},
                 (pressed ? {borderBottomWidth: 0} : {}),
-                
             ]}
-            onPress={props.onPress}
-            onPressIn={() => setPressed(true)}
-            onPressOut={() => setPressed(false)}
             activeOpacity={props.activeOpacity ? props.activeOpacity : 1}
         >
                 <Text
-                    style={[styles.pressText, props.style]}
+                    style={[styles.pressText, props.textStyle]}
                 >
                     {
                         props.text
@@ -46,6 +45,7 @@ const styles = StyleSheet.create({
     pressText: {
         fontFamily: 'PixelifySans-ExtraBold',
         fontSize: 22,
-        color: '#ffffff'
+        color: '#ffffff',
+        margin: 0
     },
 })
