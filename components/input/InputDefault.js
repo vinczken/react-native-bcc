@@ -9,11 +9,10 @@ export default React.memo(function InputDefault({ inputCores, ...props}) {
 
     return (
         <TextInput
-            ref={props.ref ? props.ref : ref}
             value={props.value}
             onChangeText={props.onChange}
             placeholder={props.placeholder}
-            style={[styles.textInput, inputCores[0], 
+            style={[styles.textInput, inputCores[0], props.style, 
                 isFocus ? 
                     { borderColor: inputCores[3], shadowColor: inputCores[3] } 
                     : { borderColor: inputCores[2], shadowColor: inputCores[2], color: inputCores[1] }]}
@@ -23,6 +22,11 @@ export default React.memo(function InputDefault({ inputCores, ...props}) {
             onBlur={props.onBlur ? props.onBlur : (() => setIsFocus(false))}
             secureTextEntry={props.secureTextEntry}
             autoCorrect={false}
+            autoComplete="off"
+            textContentType="none"
+            importantForAutofill="no"
+            keyboardType={props.keyboardType || 'default'}
+            editable={props.editable}
         />
     )
 })

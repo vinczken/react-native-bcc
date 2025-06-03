@@ -33,20 +33,27 @@ export default function InputSearch({ inputCores, botaoCores, assuntosCores, ...
                     value={pesquisa}
                     onChange={setPesquisa}
                     placeholder={props.placeholder}
+                    style={props.inputStyle}
                     inputCores={inputCores}
                 />
-                <TouchableOpacityIcon
-                    onPress={props.buttonOnPress}
-                    style={[
-                        styles.touchSearch,
-                        botaoCores[0],
-                    ]}
-                    borderColor={botaoCores[1]}
-                    iconColor={botaoCores[2]}
-                    icon={'Search'}
-                />
+                {props.buttonDisabled ? (
+                    <></>
+                ) : (
+
+                    <TouchableOpacityIcon
+                        onPress={props.buttonOnPress}
+                        style={[
+                            styles.touchSearch,
+                            botaoCores[0],
+                        ]}
+                        borderColor={botaoCores[1]}
+                        iconColor={botaoCores[2]}
+                        icon={'Search'}
+                    />
+                )
+                }
             </View>
-            { props.assuntos ? (
+            {props.assuntos ? (
                 <ScrollView
                     horizontal={true}
                     showsHorizontalScrollIndicator={false}

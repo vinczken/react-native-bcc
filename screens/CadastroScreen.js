@@ -1,53 +1,66 @@
 import { Circle } from 'iconoir-react-native';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TouchableOpacityDefault from '../components/button/TouchableOpacityDefault';
 import InputDefault from '../components/input/InputDefault';
 import LabelDefault from '../components/label/LabelDefault';
+import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
+import { Cadastro } from '../functions/Cadastro';
 import { ThemeBackgroundColor, ThemeColor, ThemeValue } from '../functions/GeneralsAux';
+import ImageTheme from '../components/imageTheme/ImageTheme';
+import { CadastroDefaultStyle } from '../components/defaultStyles/DefaultStyle';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 export default function CadastroScreen({ navigation, ...props }) {
+    const { setAuth } = useAuth();
     const { theme } = useTheme();
-    const [nome, setNome] = useState('')
-    const [usuario, setUsuario] = useState('')
-    const [email, setEmail] = useState('')
-    const [senha, setSenha] = useState('')
-    const [senhaConfirmacao, setSenhaConfirmacao] = useState('')
 
-    const cadastroLabelDefaultStyle = [
-        ThemeColor('#210124', '#FFF2F6', theme),
-        { marginLeft: 4, fontSize: 15 }
-    ]
-    const cadastroInputsDefaultStyle = [
-        [
-            ThemeColor('#750D37', '#750D37', theme),
-            ThemeBackgroundColor('#DBF9F0', '#F2C572', theme),
-            { paddingTop: 10, paddingBottom: 11, paddingHorizontal: 13, fontSize: 18 }
-        ],
-        ThemeValue('#C490D1', '#AA7BAD', theme),
-        ThemeValue('#F7F9F7', '#7676CE', theme),
-        ThemeValue('#B3DEC1', '#F29188', theme),
-    ]
+    const [nome, setNome] = useState('Caio')
+    const [usuario, setUsuario] = useState('caiozika123')
+    const [email, setEmail] = useState('caio@yahoo.com')
+    const [senha, setSenha] = useState('1234567')
+    const [senhaConfirmacao, setSenhaConfirmacao] = useState('1234567')
+    const [error, setError] = useState('');
+    
+    useEffect(() => {
+        setError('')
+    }, [nome, usuario, email, senha, senhaConfirmacao])
+
+    const Validar = async () => {
+        if (!(senha == senhaConfirmacao)) {
+            setError('Senhas diferentes')
+            return
+        } 
+
+        try {
+            const res = await Cadastro(email, senha, nome, setAuth);
+            console.log(res);
+
+            if (res.success) {
+                console.log('Usuário criado:', res.user?.displayName);
+                navigation.navigate('Login');
+            } else {
+                setError(res.message);
+                console.log(res);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.log(error);
+        }
+    };
 
     return (
         <SafeAreaProvider>
             <View
                 style={[styles.cadastroPai, ThemeBackgroundColor('#FFF7AE', '#210124', theme)]}
             >
-                {theme == 'light' ? (
-                    <Image
-                        source={require('../assets/cadastro/cardsLight.png')}
-                        style={[styles.cards]}
-                    />
-                ) : (
-                    <Image
-                        source={require('../assets/cadastro/cardsDark.png')}
-                        style={[styles.cards]}
-                    />
-                )}
+                <ImageTheme
+                    light={require('../assets/cadastro/cardsLight.png')}
+                    dark={require('../assets/cadastro/cardsDark.png')}
+                    style={[styles.cards]}
+                />
 
                 <SafeAreaView>
                     <View
@@ -79,7 +92,7 @@ export default function CadastroScreen({ navigation, ...props }) {
 
                                     <LabelDefault
                                         text={usuario ? usuario : 'Seu Usuário'}
-                                        style={[cadastroLabelDefaultStyle, { fontSize: 19, marginLeft: 0, fontFamily: 'PixelifySans-Medium' }]}
+                                        style={[CadastroDefaultStyle('label'), { fontSize: 19, marginLeft: 0, fontFamily: 'PixelifySans-Medium' }]}
                                     />
                                     <LabelDefault
                                         text={email ? email : 'Seu email'}
@@ -95,13 +108,13 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 >
                                     <LabelDefault
                                         text={'Insira seu nome'}
-                                        style={[cadastroLabelDefaultStyle]}
+                                        style={[CadastroDefaultStyle('label')]}
                                     />
                                     <InputDefault
                                         value={nome}
                                         onChange={setNome}
                                         placeholder={"Nome"}
-                                        inputCores={cadastroInputsDefaultStyle}
+                                        inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
@@ -109,13 +122,13 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 >
                                     <LabelDefault
                                         text={'Insira seu usuário'}
-                                        style={[cadastroLabelDefaultStyle]}
+                                        style={[CadastroDefaultStyle('label')]}
                                     />
                                     <InputDefault
                                         value={usuario}
                                         onChange={setUsuario}
                                         placeholder={"Usuário"}
-                                        inputCores={cadastroInputsDefaultStyle}
+                                        inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
@@ -123,13 +136,13 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 >
                                     <LabelDefault
                                         text={'Insira seu e-mail'}
-                                        style={[cadastroLabelDefaultStyle]}
+                                        style={[CadastroDefaultStyle('label')]}
                                     />
                                     <InputDefault
                                         value={email}
                                         onChange={setEmail}
                                         placeholder={"E-mail"}
-                                        inputCores={cadastroInputsDefaultStyle}
+                                        inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
@@ -137,13 +150,13 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 >
                                     <LabelDefault
                                         text={'Insira sua senha'}
-                                        style={[cadastroLabelDefaultStyle]}
+                                        style={[CadastroDefaultStyle('label')]}
                                     />
                                     <InputDefault
                                         value={senha}
                                         onChange={setSenha}
                                         placeholder={"Senha"}
-                                        inputCores={cadastroInputsDefaultStyle}
+                                        inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
@@ -151,13 +164,13 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 >
                                     <LabelDefault
                                         text={'Insira sua senha novamente'}
-                                        style={[cadastroLabelDefaultStyle]}
+                                        style={[CadastroDefaultStyle('label')]}
                                     />
                                     <InputDefault
                                         value={senhaConfirmacao}
                                         onChange={setSenhaConfirmacao}
                                         placeholder={"Senha novamente"}
-                                        inputCores={cadastroInputsDefaultStyle}
+                                        inputCores={CadastroDefaultStyle('input')}
                                         secureTextEntry={true}
                                     />
                                 </View>
@@ -165,8 +178,19 @@ export default function CadastroScreen({ navigation, ...props }) {
                             <View
                                 style={{ flexDirection: 'column', gap: 15, marginTop: 10 }}
                             >
+                                {error ? (
+                                    <LabelDefault
+                                        text={error}
+                                        style={[
+                                            CadastroDefaultStyle('label'),
+                                            { textAlign: 'center', color: '#648ED8', fontFamily: 'PixelifySans-Medium' }
+                                        ]}
+                                    />
+                                ) : (
+                                    <></>
+                                )}
                                 <TouchableOpacityDefault
-                                    onPress={() => console.log('criar')}
+                                    onPress={() => Validar()}
                                     text={"Criar conta"}
                                     style={[
                                         ThemeBackgroundColor('#E5FCFF', '#321934', theme),
@@ -182,7 +206,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 >
                                     <LabelDefault
                                         text={"Já possui uma conta?"}
-                                        style={[cadastroLabelDefaultStyle, { fontSize: 16 }]}
+                                        style={[CadastroDefaultStyle('label'), { fontSize: 16 }]}
                                     />
                                     <TouchableOpacityDefault
                                         text={"Entre com a sua conta"}

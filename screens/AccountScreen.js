@@ -12,35 +12,28 @@ import ProdutoNovamente from "../components/produto/ProdutoNovamente";
 import SectionHeader from "../components/section/SectionHeader";
 import { useTheme } from "../contexts/ThemeContext";
 import { ThemeBackgroundColor, ThemeColor, ThemeValue } from "../functions/GeneralsAux";
+import { useState } from "react";
+import ConfigModal from "../components/modal/ConfigModal";
+import { AccountDefaultStyle } from "../components/defaultStyles/DefaultStyle";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 export default function AccountScreen({ navigation, ...props }) {
     const { theme } = useTheme();
-
-    const accountPai = ThemeBackgroundColor('#ABDAFC', '#0B0B35', theme)
-    const accountConfig = ThemeBackgroundColor('#E5FCFF', '#0B0B35', theme)
-
-    const accountInputsDefaultStyle = [
-        [
-            ThemeColor('#750D37', '#750D37', theme),
-            ThemeBackgroundColor('#F7F9F7', '#ACACDE', theme),
-        ],
-        ThemeValue('#CFBAE1', '#FFF2F6', theme),
-        ThemeValue('#ABDAFC', '#0B0B35', theme),
-        ThemeValue('#ACACDE', '#F7F9F7', theme)
-    ]
-
-    const perfilCores = [
-        ThemeValue('#7676CE', '#', theme),
-        ThemeValue('#ACACDE', '#', theme)
-    ]
+    const [showModal, setShowModal] = useState(false);
 
     return (
         <SafeAreaProvider>
+            <SafeAreaView>
+                <ConfigModal
+                    visible={showModal}
+                    exit={() => setShowModal(!showModal)}
+                />
+            </SafeAreaView>
+
             <ScrollView
                 showsVerticalScrollIndicator={false}
-                style={[styles.accountPai, accountPai]}
+                style={[styles.accountPai, AccountDefaultStyle('pai')]}
             >
                 <SafeAreaView>
                     <View
@@ -48,7 +41,7 @@ export default function AccountScreen({ navigation, ...props }) {
                     >
                         <InputSearch
                             placeholder={"Pesquise por tipo"}
-                            inputCores={accountInputsDefaultStyle}
+                            inputCores={AccountDefaultStyle('input')}
                             botaoCores={[
                                 ThemeBackgroundColor('#ACACDE', '#F7F9F7', theme),
                                 ThemeValue('#551159', '#7676CE', theme),
@@ -67,7 +60,7 @@ export default function AccountScreen({ navigation, ...props }) {
                         />
                     </View>
                     <View
-                        style={[styles.telaConfig, accountConfig]}
+                        style={[styles.telaConfig, AccountDefaultStyle('config')]}
                     >
                         <View
                             style={styles.perfil}
@@ -76,12 +69,12 @@ export default function AccountScreen({ navigation, ...props }) {
                                 style={{ flexDirection: 'row', alignItems: 'center', gap: 10 }}
                             >
                                 <View
-                                    style={[styles.iconPerfil, { borderColor: perfilCores[0], backgroundColor: perfilCores[1] }]}
+                                    style={[styles.iconPerfil, { borderColor: AccountDefaultStyle('perfil')[0], backgroundColor: AccountDefaultStyle('perfil')[1] }]}
                                 >
                                     <FontAwesome
                                         name="user-circle-o"
                                         size={50}
-                                        color={perfilCores[0]}
+                                        color={AccountDefaultStyle('perfil')[0]}
                                     />
                                 </View>
                                 <LabelDefault
@@ -91,11 +84,11 @@ export default function AccountScreen({ navigation, ...props }) {
                             </View>
                             <TouchableOpacityIcon
                                 icon={'EditPencil'}
-                                iconColor={perfilCores[0]}
+                                iconColor={AccountDefaultStyle('perfil')[0]}
                                 iconWidth={31}
                                 iconHeight={31}
                                 strokeWidth={2.50}
-                                onPress={props.buttonOnPress}
+                                onPress={() => setShowModal(true)}
                                 style={[
                                     styles.touchEdit,
                                 ]}
@@ -152,6 +145,7 @@ export default function AccountScreen({ navigation, ...props }) {
                                 >
                                     {Array.from({ length: 5 }, (_, index) => (
                                         <ProdutoNovamente
+                                            key={index}
                                             nome={'Blister Triplo Pokémon...'}
                                             status={true}
                                         />
@@ -178,6 +172,7 @@ export default function AccountScreen({ navigation, ...props }) {
                                 >
                                     {Array.from({ length: 3 }, (_, index) => (
                                         <ProdutoContinuar
+                                            key={index}
                                             nome={'Cartas TCG Pokemon'}
                                             qtd={10}
                                         />

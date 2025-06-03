@@ -5,6 +5,7 @@ import InputSearch from "../components/input/InputSearch";
 import SectionDefault from "../components/section/SectionDefault";
 import { useTheme } from "../contexts/ThemeContext";
 import { ThemeBackgroundColor, ThemeColor, ThemeValue } from "../functions/GeneralsAux";
+import { HomeDefaultStyle } from "../components/defaultStyles/DefaultStyle";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
@@ -12,15 +13,6 @@ export default function HomeScreen({ navigation, ...props }) {
     const { theme } = useTheme();
 
     const homePai = ThemeBackgroundColor('#FFECDB', '#0B0B35', theme)
-    const homeInputsDefaultStyle = [
-        [
-            ThemeColor('#750D37', '#750D37', theme),
-            ThemeBackgroundColor('#DBF9F0', '#ACACDE', theme),
-        ],
-        ThemeValue('#C490D1', '#FFF2F6', theme),
-        ThemeValue('#FFECDB', '#0B0B35', theme),
-        ThemeValue('#C490D1', '#F7F9F7', theme)
-    ]
 
     const banners = [[
         'Oferta do',
@@ -58,7 +50,7 @@ export default function HomeScreen({ navigation, ...props }) {
                     >
                         <InputSearch
                             placeholder={"Pesquise por tipo"}
-                            inputCores={homeInputsDefaultStyle}
+                            inputCores={HomeDefaultStyle('input')}
                             botaoCores={[
                                 ThemeBackgroundColor('#C490D1', '#F7F9F7', theme),
                                 ThemeValue('#750D37', '#7676CE', theme),

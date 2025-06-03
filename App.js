@@ -1,17 +1,19 @@
-import { StyleSheet } from 'react-native';
-
 import * as Font from 'expo-font';
-import * as SplashScreen from 'expo-splash-screen'; // Para controlar a tela de splash
-import { useEffect } from 'react';
+import * as SplashScreen from 'expo-splash-screen';
+import { useEffect, useState, useCallback } from 'react';
+import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { ThemeProvider } from './contexts/ThemeContext';
 import MainNavigator from './navigation/MainNavigator';
-// Mantenha a tela de splash visível enquanto carregamos os recursos
+import { getLoggedInAuth } from './functions/Auth';
+
 SplashScreen.preventAutoHideAsync();
 
-export default function App() {
+function AppContent() {
+  const { setAuth } = useAuth();
+  const [appIsReady, setAppIsReady] = useState(false);
 
   useEffect(() => {
-    async function prepare() {
+    (async () => {
       try {
         await Font.loadAsync({
           'PixelifySans-Regular': require('./assets/fonts/PixelifySans-Regular.ttf'),
@@ -21,36 +23,34 @@ export default function App() {
           'PixelifySans-Medium': require('./assets/fonts/PixelifySans-ExtraBold.ttf'),
           'PixelifySans-SemiBold': require('./assets/fonts/PixelifySans-SemiBold.ttf'),
         });
-        await new Promise(resolve => setTimeout(resolve, 2000)); // Simula um carregamento mais longo
+
+        const user = await getLoggedInAuth();
+        if (user) setAuth(user);
+        else setAuth({ uid: 'invalido' });
+
       } catch (e) {
         console.warn(e);
       } finally {
-        await SplashScreen.hideAsync();
+        setAppIsReady(true);
       }
-    }
-
-    prepare();
+    })();
   }, []);
-  // Esconde a tela de splash quando o app estiver pronto
 
+  const onLayoutRootView = useCallback(async () => {
+    if (appIsReady) await SplashScreen.hideAsync();
+  }, [appIsReady]);
 
-  return (
-    <ThemeProvider>
-      <MainNavigator
-      />
-    </ThemeProvider>
-  );
+  if (!appIsReady) return null;
+
+  return <MainNavigator onLayoutRootView={onLayoutRootView} />;
 }
 
-const styles = StyleSheet.create({
-
-  pai: {
-    margin: 0,
-    padding: 0,
-    display: 'flex',
-    flex: 1,
-    boxSizing: 'border-box',
-    width: '100%',
-    height: '100%',
-  },
-});
+export default function App() {
+  return (
+    <AuthProvider>
+      <ThemeProvider>
+        <AppContent />
+      </ThemeProvider>
+    </AuthProvider>
+  );
+}

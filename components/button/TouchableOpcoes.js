@@ -27,7 +27,7 @@ export default function TouchableOpcoes(props) {
                 <TouchableOpacityDefault
                     key={index}
                     text={item}
-                    onPress={opcoesFunctions[index]} // MUDAR
+                    onPress={() => console.log('')} // MUDAR
                     style={[
                         styles.assuntosBotao,
                         { backgroundColor: cores[1] },

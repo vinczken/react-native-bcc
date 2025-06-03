@@ -4,62 +4,57 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TouchableOpacityDefault from '../components/button/TouchableOpacityDefault';
 import InputDefault from '../components/input/InputDefault';
 import LabelDefault from '../components/label/LabelDefault';
+import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
 import { ThemeBackgroundColor, ThemeColor, ThemeValue } from '../functions/GeneralsAux';
+import { Login } from '../functions/Login';
+import { LoginDefaultStyle } from '../components/defaultStyles/DefaultStyle';
+import ImageTheme from '../components/imageTheme/ImageTheme';
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 export default function LoginScreen({ navigation, ...props }) {
+    const { setAuth } = useAuth();
     const { theme } = useTheme();
-    const [email, setEmail] = useState('');
-    const [senha, setSenha] = useState('');
+
+    const [email, setEmail] = useState('caio@yahoo.com');
+    const [senha, setSenha] = useState('1234567');
+    const [error, setError] = useState('');
 
     const loginPaiStyle = ThemeBackgroundColor('#F7F9F7', '#001643', theme)
 
+    const Validar = async () => {
+        try {
+            const res = await Login(email, senha, setAuth);
+            console.log(res);
 
-    const loginLabelDefaultStyle = ThemeColor('#210124', '#F7F9F7', theme)
-    const loginInputsDefaultStyle = [
-        [
-            ThemeBackgroundColor('#CEEAFF', '#7676CE', theme),
-            ThemeColor('#551159', '#F7F9F7', theme)
-        ],
-        ThemeValue('#C490D1', '#C59FC9', theme),
-        ThemeValue('#F7F9F7', '#001643', theme),
-        ThemeValue('#FF89B1', '#C59FC9', theme)
-    ]
-
-    const Validar = () => {
-        navigation.navigate('Home')
-    }
+            if (res.success) {
+                navigation.navigate('Home');
+            } else {
+                setError(res.error);
+            }
+        } catch (error) {
+            setError(error.message);
+            console.log(error);
+        }
+    };
 
     return (
         <SafeAreaProvider>
             <View
                 style={[styles.loginPai, loginPaiStyle]}
             >
-                {theme == 'light' ? (
-                    <>
-                        <Image
-                            source={require('../assets/login/cardsTopLight.png')}
-                            style={[styles.cardsTop]}
-                        />
-                        <Image
-                            source={require('../assets/login/cardsBottomLight.png')}
-                            style={[styles.cardsBottom]}
-                        />
-                    </>
-                ) : (
-                    <>
-                        <Image
-                            source={require('../assets/login/cardsTopDark.png')}
-                            style={[styles.cardsTop]}
-                        />
-                        <Image
-                            source={require('../assets/login/cardsBottomDark.png')}
-                            style={[styles.cardsBottom]}
-                        />
-                    </>
-                )}
+
+                <ImageTheme
+                    light={require('../assets/login/cardsTopLight.png')}
+                    dark={require('../assets/login/cardsTopDark.png')}
+                    style={[styles.cardsTop]}
+                />
+                <ImageTheme
+                    light={require('../assets/login/cardsBottomLight.png')}
+                    dark={require('../assets/login/cardsBottomDark.png')}
+                    style={[styles.cardsBottom]}
+                />
 
                 <SafeAreaView>
                     <View
@@ -74,13 +69,13 @@ export default function LoginScreen({ navigation, ...props }) {
                             >
                                 <LabelDefault
                                     text={"Insira seu e-mail"}
-                                    style={loginLabelDefaultStyle}
+                                    style={LoginDefaultStyle('label')}
                                 />
                                 <InputDefault
                                     value={email}
                                     onChange={setEmail}
                                     placeholder={"E-mail"}
-                                    inputCores={loginInputsDefaultStyle}
+                                    inputCores={LoginDefaultStyle('input')}
                                 />
                             </View>
                             <View
@@ -88,13 +83,13 @@ export default function LoginScreen({ navigation, ...props }) {
                             >
                                 <LabelDefault
                                     text={"Insira sua senha"}
-                                    style={loginLabelDefaultStyle}
+                                    style={LoginDefaultStyle('label')}
                                 />
                                 <InputDefault
                                     value={senha}
                                     onChange={setSenha}
                                     placeholder={"Senha"}
-                                    inputCores={loginInputsDefaultStyle}
+                                    inputCores={LoginDefaultStyle('input')}
                                 />
                                 <TouchableOpacityDefault
                                     text={"Esqueceu sua senha?"}
@@ -121,8 +116,19 @@ export default function LoginScreen({ navigation, ...props }) {
                         <View
                             style={[styles.bottomInteract]}
                         >
+                            {error ? (
+                                <LabelDefault
+                                    text={error}
+                                    style={[
+                                        LoginDefaultStyle('label'),
+                                        { textAlign: 'center', color: '#648ED8', fontFamily: 'PixelifySans-Medium' }
+                                    ]}
+                                />
+                            ) : (
+                                <></>
+                            )}
                             <TouchableOpacityDefault
-                                onPress={Validar}
+                                onPress={() => Validar()}
                                 text={"Entrar"}
                                 style={[
                                     ThemeBackgroundColor('#B74F87', '#4703A6', theme),
@@ -139,7 +145,7 @@ export default function LoginScreen({ navigation, ...props }) {
                                 <LabelDefault
                                     text={"Sua primeira vez aqui?"}
                                     style={[
-                                        loginLabelDefaultStyle,
+                                        LoginDefaultStyle('label'),
                                         styles.labelDefaultFixo
                                     ]}
                                 />
@@ -168,9 +174,6 @@ export default function LoginScreen({ navigation, ...props }) {
         </SafeAreaProvider>
     );
 }
-/*
-
-*/
 const styles = StyleSheet.create({
     loginPai: {
         flex: 1,
