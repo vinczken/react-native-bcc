@@ -12,7 +12,7 @@ export default React.memo(function InputDefault({ inputCores, ...props}) {
             value={props.value}
             onChangeText={props.onChange}
             placeholder={props.placeholder}
-            style={[styles.textInput, inputCores[0], props.style, 
+            style={[styles.textInput, props.style, inputCores[0],
                 isFocus ? 
                     { borderColor: inputCores[3], shadowColor: inputCores[3] } 
                     : { borderColor: inputCores[2], shadowColor: inputCores[2], color: inputCores[1] }]}

@@ -7,15 +7,8 @@ import TouchableOpacityDefault from "./TouchableOpacityDefault";
 export default function TouchableOpcoes(props) {
     const { theme } = useTheme();
     
-    const defaultFunction = () => console.log('')
-
     const opcoes = ['Pedidos', 'Comprar Novamente', 'Conta', 'Favoritos']
-    const opcoesFunctions = props.functions || Array.from({length: 4}, defaultFunction)
-
-    const cores = [
-        ThemeValue('#C59FC9', '#FFF7AE', theme),
-        ThemeValue('#FFF2F6', '#F29188', theme)
-    ]
+    const opcoesFunctions = props.functions
 
     return (
         <View
@@ -27,16 +20,16 @@ export default function TouchableOpcoes(props) {
                 <TouchableOpacityDefault
                     key={index}
                     text={item}
-                    onPress={() => console.log('')} // MUDAR
+                    onPress={() => opcoesFunctions[index]} // MUDAR
                     style={[
                         styles.assuntosBotao,
-                        { backgroundColor: cores[1] },
+                        { backgroundColor: ThemeValue('#FFF2F6', '#F29188', theme) },
                     ]}
                     textStyle={[
                         styles.assuntosTexto,
-                        { color: cores[0] }
+                        { color: ThemeValue('#C59FC9', '#FFF7AE', theme) }
                     ]}
-                    borderColor={cores[0]}
+                    borderColor={ThemeValue('#C59FC9', '#FFF7AE', theme)}
                 />
             ))}
         </View>

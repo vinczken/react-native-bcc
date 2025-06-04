@@ -3,7 +3,6 @@ import { useEffect, useState } from 'react';
 import { Dimensions, Image, StyleSheet, View } from 'react-native';
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context';
 import TouchableOpacityDefault from '../components/button/TouchableOpacityDefault';
-import InputDefault from '../components/input/InputDefault';
 import LabelDefault from '../components/label/LabelDefault';
 import { useAuth } from '../contexts/AuthContext';
 import { useTheme } from '../contexts/ThemeContext';
@@ -11,6 +10,7 @@ import { Cadastro } from '../functions/Cadastro';
 import { ThemeBackgroundColor, ThemeColor, ThemeValue } from '../functions/GeneralsAux';
 import ImageTheme from '../components/imageTheme/ImageTheme';
 import { CadastroDefaultStyle } from '../components/defaultStyles/DefaultStyle';
+import LabelInput from '../components/cadastro/LabelInput';
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 export default function CadastroScreen({ navigation, ...props }) {
@@ -23,7 +23,7 @@ export default function CadastroScreen({ navigation, ...props }) {
     const [senha, setSenha] = useState('1234567')
     const [senhaConfirmacao, setSenhaConfirmacao] = useState('1234567')
     const [error, setError] = useState('');
-    
+
     useEffect(() => {
         setError('')
     }, [nome, usuario, email, senha, senhaConfirmacao])
@@ -32,13 +32,14 @@ export default function CadastroScreen({ navigation, ...props }) {
         if (!(senha == senhaConfirmacao)) {
             setError('Senhas diferentes')
             return
-        } 
+        }
 
         try {
             const res = await Cadastro(email, senha, nome, setAuth);
             console.log(res);
 
             if (res.success) {
+                setError('Usuário criado:', res.user?.displayName);
                 console.log('Usuário criado:', res.user?.displayName);
                 navigation.navigate('Login');
             } else {
@@ -96,7 +97,7 @@ export default function CadastroScreen({ navigation, ...props }) {
                                     />
                                     <LabelDefault
                                         text={email ? email : 'Seu email'}
-                                        style={[{ fontSize: 16, color: (ThemeValue('#750D37', '#97F9F9', theme)) }]}
+                                        style={[{ fontSize: 16, color: ThemeValue('#750D37', '#97F9F9', theme) }]}
                                     />
                                 </View>
                             </View>
@@ -106,70 +107,61 @@ export default function CadastroScreen({ navigation, ...props }) {
                                 <View
                                     style={[styles.inputDado]}
                                 >
-                                    <LabelDefault
-                                        text={'Insira seu nome'}
-                                        style={[CadastroDefaultStyle('label')]}
-                                    />
-                                    <InputDefault
-                                        value={nome}
+                                    < LabelInput
+                                        textLabel={'Insira seu nome'}
+                                        styleLabel={CadastroDefaultStyle('label')}
+                                        placeholderInput={"Nome"}
+                                        valueInput={nome}
                                         onChange={setNome}
-                                        placeholder={"Nome"}
                                         inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
                                     style={[styles.inputDado]}
                                 >
-                                    <LabelDefault
-                                        text={'Insira seu usuário'}
-                                        style={[CadastroDefaultStyle('label')]}
-                                    />
-                                    <InputDefault
-                                        value={usuario}
+                                    < LabelInput
+                                        textLabel={'Insira seu usuário'}
+                                        styleLabel={CadastroDefaultStyle('label')}
+                                        placeholderInput={"Usuário"}
+                                        valueInput={usuario}
                                         onChange={setUsuario}
-                                        placeholder={"Usuário"}
                                         inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
                                     style={[styles.inputDado]}
                                 >
-                                    <LabelDefault
-                                        text={'Insira seu e-mail'}
-                                        style={[CadastroDefaultStyle('label')]}
-                                    />
-                                    <InputDefault
-                                        value={email}
+                                    < LabelInput
+                                        textLabel={'Insira seu e-mail'}
+                                        styleLabel={CadastroDefaultStyle('label')}
+                                        placeholderInput={"E-mail"}
+                                        valueInput={email}
                                         onChange={setEmail}
-                                        placeholder={"E-mail"}
                                         inputCores={CadastroDefaultStyle('input')}
                                     />
                                 </View>
                                 <View
                                     style={[styles.inputDado]}
                                 >
-                                    <LabelDefault
-                                        text={'Insira sua senha'}
-                                        style={[CadastroDefaultStyle('label')]}
-                                    />
-                                    <InputDefault
-                                        value={senha}
+                                    <LabelInput
+                                        textLabel={'Insira sua senha'}
+                                        styleLabel={CadastroDefaultStyle('label')}
+                                        placeholderInput={"Senha"}
+                                        valueInput={senha}
                                         onChange={setSenha}
-                                        placeholder={"Senha"}
                                         inputCores={CadastroDefaultStyle('input')}
+                                        secureTextEntry={true}
                                     />
                                 </View>
                                 <View
                                     style={[styles.inputDado]}
                                 >
-                                    <LabelDefault
-                                        text={'Insira sua senha novamente'}
-                                        style={[CadastroDefaultStyle('label')]}
-                                    />
-                                    <InputDefault
-                                        value={senhaConfirmacao}
+                                    < LabelInput
+                                        textLabel={'Insira sua senha novamente'}
+                                        styleLabel={CadastroDefaultStyle('label')}
+                                        placeholderInput={"Senha novamente"}
+                                        valueInput={senhaConfirmacao}
                                         onChange={setSenhaConfirmacao}
-                                        placeholder={"Senha novamente"}
                                         inputCores={CadastroDefaultStyle('input')}
                                         secureTextEntry={true}
                                     />

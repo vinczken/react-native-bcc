@@ -40,7 +40,7 @@ import {
 } from 'firebase/auth';
 
 
-const updateDisplayName = async (newName) => {
+export const updateDisplayName = async (newName) => {
     try {
         await updateProfile(auth.currentUser, {
             displayName: newName
@@ -51,7 +51,7 @@ const updateDisplayName = async (newName) => {
     }
 };
 
-const updateUserEmail = async (newEmail, currentPassword) => {
+export const updateUserEmail = async (newEmail, currentPassword) => {
     try {
         const user = auth.currentUser;
         const credential = EmailAuthProvider.credential(
@@ -69,7 +69,7 @@ const updateUserEmail = async (newEmail, currentPassword) => {
 };
 
 // Função para atualizar senha
-const updateUserPassword = async (newPassword, currentPassword) => {
+export const updateUserPassword = async (newPassword, currentPassword) => {
     try {
         const user = auth.currentUser;
         const credential = EmailAuthProvider.credential(

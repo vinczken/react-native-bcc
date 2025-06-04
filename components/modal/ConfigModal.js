@@ -1,51 +1,29 @@
 import { Dimensions, Modal, ScrollView, StyleSheet, View } from "react-native";
 import { ThemeBackgroundColor, ThemeColor, ThemeValue } from "../../functions/GeneralsAux";
 import { useTheme } from "../../contexts/ThemeContext";
-import { AccountDefaultStyle } from "../defaultStyles/DefaultStyle";
-import InputDefault from "../input/InputDefault";
-import { FastArrowDown, Xmark } from "iconoir-react-native";
-import LabelDefault from "../label/LabelDefault";
 import TouchableOpacityIcon from "../button/TouchableOpacityIcon";
-import { useCallback, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import TouchableOpacityDefault from "../button/TouchableOpacityDefault";
-import { EmailAuthProvider, reauthenticateWithCredential, updateEmail, updatePassword, updateProfile } from "firebase/auth";
+import { EmailAuthProvider, reauthenticateWithCredential } from "firebase/auth";
 import { auth } from "../../firebaseConfig";
-import { deleteAuth, setAuthWith } from "../../functions/Auth";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+import { deleteAuth, setAuthWith, updateDisplayName, updateUserEmail, updateUserPassword } from "../../functions/Auth";
+import HeaderModal from "./HeaderModal";
+import LabelInputModal from "./LabelInput";
+import { useAuth } from "../../contexts/AuthContext";
+import LabelDefault from "../label/LabelDefault";
 
 const { height: screenHeight, width: screenWidth } = Dimensions.get('window');
 
 export default function ConfigModal(props) {
-
+    const { setAuth } = useAuth();
     const { theme } = useTheme();
     const [editado, setEditado] = useState([false, false, false]);
     const [nome, setNome] = useState(auth.currentUser.displayName)
-    const [email, setEmail] = useState('caio@')
+    const [email, setEmail] = useState(auth.currentUser.email)
     const [senha, setSenha] = useState('123456')
     const [senhaNova, setSenhaNova] = useState('')
 
-    const handleChange = (value) => (text) => {
-        switch (value) {
-            case nome:
-                setNome(text)
-                break;
-
-            case email:
-                setEmail(text)
-                break;
-
-            case senhaNova:
-                setSenhaNova(text)
-                break;
-
-            case senha:
-                setSenha(text)
-                break;
-
-            default:
-                break;
-        }
-    };
+    const [confirmacao, setConfirmacao] = useState('')
 
     useEffect(() => {
         setEditado([
@@ -55,33 +33,8 @@ export default function ConfigModal(props) {
         ]);
     }, [nome, email, senhaNova]);
 
-    const Linha = ({ cor }) => (
-        <View style={{ width: '88%', height: 3, backgroundColor: cor, borderRadius: 100 }} />
-    )
-
-    const Header = ({ text }) => (
-        <>
-            <View
-                style={styles.header}
-            >
-                <FastArrowDown
-                    color={ThemeValue('#210124', '#', theme)}
-                    strokeWidth={2.5}
-                    height={0.08 * screenWidth}
-                    width={0.08 * screenWidth}
-                    style={styles.iconHeader}
-                />
-                <LabelDefault
-                    text={text}
-                    style={styles.headerLabel}
-                />
-            </View>
-            < Linha cor={ThemeValue('#210124', '#210124', theme)} />
-        </>
-    )
-
-
     const [isUpdating, setIsUpdating] = useState(false);
+    const [isDeleting, setIsDeleting] = useState(false);
     const Alterar = async () => {
         setIsUpdating(true);
         try {
@@ -90,113 +43,37 @@ export default function ConfigModal(props) {
                 return;
             }
 
+            if (editado[2] && senhaNova) {
+                if (senhaNova.length < 6) throw new Error('Senha muito curta');
+            }
+
             const user = auth.currentUser;
             if (!user) throw new Error('Usuário não autenticado');
 
-            // Reautenticação
             const credential = EmailAuthProvider.credential(user.email, senha);
-            await reauthenticateWithCredential(user, credential);
+            const res = await reauthenticateWithCredential(user, credential);
 
-            // Executar atualizações
-            const updates = [];
+            if (res.user) {
+                if (editado[0] && nome !== user.displayName) {
+                    await updateDisplayName(nome);
+                }
 
-            if (editado[0] && nome !== user.displayName) {
-                updates.push(updateProfile(user, { displayName: nome }));
+                if (editado[1] && email !== user.email) {
+                    await updateUserEmail(email, senha);
+                }
+
+                if (editado[2] && senhaNova) {
+                    await updateUserPassword(email, senha);
+                }
+
+                await setAuthWith(user, setAuth);
             }
-
-            if (editado[1] && email !== user.email) {
-                updates.push(updateEmail(user, email));
-            }
-
-            if (editado[2] && senhaNova) {
-                if (senhaNova.length < 6) throw new Error('Senha muito curta');
-                updates.push(updatePassword(user, senhaNova));
-            }
-
-            await Promise.all(updates);
-
-            // Atualizar AsyncStorage
-            await AsyncStorage.setItem('@auth_data', JSON.stringify({
-                uid: user.uid,
-                email: email,
-                displayName: nome
-            }));
-
-            await setAuthWith(user)
-            alert('Dados atualizados!');
-
         } catch (error) {
             console.error(error);
             alert(`Erro: ${error.message}`);
         } finally {
             setIsUpdating(false);
         }
-    };
-
-    const [editing, setEditing] = useState({});
-
-    const MudarDado = ({ dado, index, value, setValue }) => {
-
-        return (
-            <>
-                <LabelDefault
-                    text={dado}
-                    style={[styles.dado, ThemeColor('#7676CE', '#', theme)]}
-                />
-                <View style={styles.infoInputBot}>
-                    <InputDefault
-                        placeholder={dado}
-                        value={value}
-                        onChange={handleChange(value)}
-                        inputCores={[
-                            [
-                                ThemeColor('#210124', '#750D37', theme),
-                                ThemeBackgroundColor('#CEEAFF', '#ACACDE', theme),
-                            ],
-                            ThemeValue('#CFBAE1', '#FFF2F6', theme),
-                            ThemeValue('#F7F9F7', '#0B0B35', theme),
-                            ThemeValue('#ACACDE', '#F7F9F7', theme),
-                        ]}
-                        style={[styles.infoInput]}
-                    //secureTextEntry={dado.includes('Senha')}
-                    />
-                    {dado.includes('Senha Atual') ? (
-                        <></>
-                    ) : (
-                        <TouchableOpacityIcon
-                            icon={editing ? 'Check' : 'EditPencil'}
-                            iconColor={ThemeValue('#F7F9F7', '#', theme)}
-                            iconWidth={23}
-                            iconHeight={23}
-                            strokeWidth={2.8}
-                            onPress={() => {
-                                if (editing) {
-                                    // Quando clica no check, verifica se houve mudança
-                                    if (value !== auth[dado.toLowerCase()]) {
-                                        setEditado(prev => {
-                                            const newEditado = [...prev];
-                                            newEditado[index] = true;
-                                            return newEditado;
-                                        });
-                                    }
-                                }
-                                setEditing(!editing);
-                            }}
-                            style={[
-                                styles.dadoBut,
-                                editing
-                                    ? ThemeBackgroundColor('#648ED8', '#', theme)
-                                    : ThemeBackgroundColor('#ACACDE', '#', theme)
-                            ]}
-                            borderColor={editing
-                                ? ThemeValue('#C1E0F7', '#', theme)
-                                : ThemeValue('#7676CE', '#', theme)}
-                            activeOpacity={1}
-                        />
-                    )}
-                </View>
-            </>
-        );
     };
 
     return (
@@ -210,27 +87,29 @@ export default function ConfigModal(props) {
                     <View
                         style={{ alignItems: 'flex-end' }}
                     >
-                        <Xmark
-                            color={ThemeValue('#A61F5E', '#', theme)}
+                        <TouchableOpacityIcon
+                            icon={'Xmark'}
+                            iconColor={ThemeValue('#7676CE', '#', theme)}
                             strokeWidth={2.5}
-                            height={0.08 * screenWidth}
-                            width={0.08 * screenWidth}
-                            style={styles.iconHeader}
+                            iconHeight={0.08 * screenWidth}
+                            iconWidth={0.08 * screenWidth}
                             onPress={props.exit}
+                            style={[styles.iconExit]}
+                            activeOpacity={1}
                         />
                     </View>
                     <ScrollView>
                         <View
                             style={styles.config}
                         >
-                            <Header text={'Alterar informações'} />
+                            <HeaderModal text={'Alterar informações'} styles={styles} color={ThemeValue('#210124', '#', theme)} />
                             <View
                                 style={styles.informacoes}
                             >
-                                <MudarDado dado={'Nome'} index={0} value={nome} setValue={setNome} />
-                                <MudarDado dado={'Email'} index={1} value={email} setValue={setEmail} />
-                                <MudarDado dado={'Senha Nova'} index={2} value={senhaNova} setValue={setSenhaNova} />
-                                <MudarDado dado={'Senha Atual'} value={senha} setValue={setSenha} />
+                                <LabelInputModal key={0} textLabel={'Nome'} index={0} value={nome} onChange={setNome} styles={styles} editado={editado} setEditado={setEditado} />
+                                <LabelInputModal key={1} textLabel={'Email'} index={1} value={email} onChange={setEmail} styles={styles} editado={editado} setEditado={setEditado} />
+                                <LabelInputModal key={2} textLabel={'Senha Nova'} index={2} value={senhaNova} onChange={setSenhaNova} styles={styles} editado={editado} setEditado={setEditado} />
+                                <LabelInputModal key={3} textLabel={'Senha Atual'} index={3} value={senha} onChange={setSenha} styles={styles} editado={editado} setEditado={setEditado} />
 
                                 <TouchableOpacityDefault
                                     onPress={() => Alterar()}
@@ -238,7 +117,7 @@ export default function ConfigModal(props) {
                                     disabled={isUpdating}
                                     style={[
                                         ThemeBackgroundColor('#648ED8', '#4703A6', theme),
-                                        { marginTop: 15, opacity: isUpdating ? 0.7 : 1 }
+                                        { marginVertical: 20, opacity: isUpdating ? 0.7 : 1, height: 0.1 * screenWidth, paddingVertical: 0 }
                                     ]}
                                     textStyle={[
                                         ThemeColor('#F7F9F7', '#F7F9F7', theme),
@@ -246,34 +125,41 @@ export default function ConfigModal(props) {
                                     borderColor={ThemeValue('#C1E0F7', '#A4DEF9', theme)}
                                 />
                             </View>
+                            <HeaderModal text={'Deletar conta'} styles={styles} color={ThemeValue('#A61F5E', '#', theme)} />
                             <View
-                                style={styles.header}
+                                style={[styles.informacoes, { height: 0.6 * screenHeight }]}
                             >
-                                <FastArrowDown
-                                    color={ThemeValue('#A61F5E', '#', theme)}
-                                    strokeWidth={2.5}
-                                    height={0.08 * screenWidth}
-                                    width={0.08 * screenWidth}
-                                    style={styles.iconHeader}
-                                />
-                                <LabelDefault
-                                    text={'Deletar conta'}
-                                    style={[styles.headerLabel, ThemeColor('#A61F5E', '#', theme)]}
-                                />
-                            </View>
-                            <Linha cor={ThemeValue('#A61F5E', '#', theme)} />
-                            <View
-                                style={styles.informacoes}
-                            >
+
+                                <View
+                                    style={{ flexDirection: 'row' }}
+                                >
+
+                                    <LabelDefault
+                                        text={'Digite \''}
+                                        style={[styles.dado]}
+                                    />
+                                    <LabelDefault
+                                        text={'Deletar minha conta'}
+                                        style={[styles.dado, ThemeColor('#B8336A', '#', theme), { marginLeft: 0 }]}
+                                    />
+                                    <LabelDefault
+                                        text={'\''}
+                                        style={[styles.dado, { marginLeft: 0 }]}
+                                    />
+                                </View>
+                                <LabelInputModal disableLabel={true} textLabel={'Digite aqui :C'} value={confirmacao} onChange={setConfirmacao} styles={styles} editado={editado} setEditado={setEditado} />
+
                                 <TouchableOpacityDefault
                                     onPress={() => {
-                                        deleteAuth(senha)
+                                        setIsDeleting(true)
+                                        deleteAuth(senha)       //ALTERAR AQUI!!!!!!!!!!!!!!!!!!!!
+                                        setIsDeleting(false)
                                     }}
-                                    text={'Deletar'}
-                                    disabled={isUpdating}
+                                    text={isDeleting ? 'Deletando...' : 'Deletar'}
+                                    disabled={isDeleting}
                                     style={[
                                         ThemeBackgroundColor('#648ED8', '#4703A6', theme),
-                                        { marginTop: 15, opacity: isUpdating ? 0.7 : 1, width: '100%' }
+                                        { marginVertical: 15, opacity: isUpdating ? 0.7 : 1, height: 0.1 * screenWidth, paddingVertical: 0 }
                                     ]}
                                     textStyle={[
                                         ThemeColor('#F7F9F7', '#F7F9F7', theme),
@@ -320,21 +206,31 @@ const styles = StyleSheet.create({
         fontSize: 24,
         fontFamily: 'PixelifySans-Bold'
     },
+    iconExit: {
+        paddingVertical: 0,
+        marginTop: 10,
+        paddingHorizontal: 8,
+        borderWidth: 0,
+        shadowOpacity: 0
+    },
     informacoes: {
         flex: 1,
         paddingHorizontal: 0,
     },
     infoInput: {
         width: screenWidth * 0.5,
-        height: screenWidth * 0.07
+        height: screenWidth * 0.08,
+        paddingVertical: 0,
+        paddingHorizontal: 10
     },
     infoInputBot: {
         flexDirection: 'row',
-        gap: 5
+        gap: 5,
     },
     dado: {
         fontFamily: 'PixelifySans-Medium',
         fontSize: 20,
+        marginLeft: 8
     },
     dadoBut: {
         height: 0.08 * screenWidth,

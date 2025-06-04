@@ -16,7 +16,7 @@ export async function Cadastro(email, senha, displayName, setAuth) {
             displayName: displayName
         });
 
-        setAuthWith(userCredential.user, setAuth)
+        setAuthWith(auth.user, setAuth)
 
         await setDoc(doc(db, "users", userCredential.user.uid), {
             name: displayName,
